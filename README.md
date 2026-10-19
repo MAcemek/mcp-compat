@@ -15,17 +15,18 @@ GitHub Action and only sends lifecycle, discovery and list requests.
 ## Usage
 
 ```bash
-npx mcp-compat --stdio "node dist/index.js"
-npx mcp-compat --stdio "npx -y @modelcontextprotocol/server-everything"
-npx mcp-compat --url https://example.com/mcp --header "Authorization: Bearer $TOKEN"
-npx mcp-compat --stdio "node dist/index.js" --fail-on no-modern,no-legacy
+npx @macemek1/mcp-compat --stdio "node dist/index.js"
+npx @macemek1/mcp-compat --stdio "npx -y @modelcontextprotocol/server-everything"
+npx @macemek1/mcp-compat --url https://example.com/mcp --header "Authorization: Bearer $TOKEN"
+npx @macemek1/mcp-compat --stdio "node dist/index.js" --fail-on no-modern,no-legacy
 ```
 
-Requires Node.js 22 or later.
+Requires Node.js 22 or later. The npm package is `@macemek1/mcp-compat`; after
+`npm install -g @macemek1/mcp-compat` the command is `mcp-compat`.
 
 ## Example output
 
-`npx mcp-compat --stdio "node test/fixtures/servers/stdio-server.mjs legacy"` checks the legacy
+`npx @macemek1/mcp-compat --stdio "node test/fixtures/servers/stdio-server.mjs legacy"` checks the legacy
 test server in this repository, which supports 2025-11-25 and 2025-06-18. The output below
 comes from `npm run demo`:
 

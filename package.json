@@ -1,5 +1,5 @@
 {
-  "name": "mcp-compat",
+  "name": "@macemek1/mcp-compat",
   "version": "0.1.0",
   "description": "Check which MCP protocol versions and transports a server works with, and which clients can connect to it.",
   "type": "module",

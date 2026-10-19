@@ -8,7 +8,7 @@ All notable changes to this project are documented here. The format is based on
 
 ### Added
 
-- First release of mcp-compat, a CLI (`npx mcp-compat`) and GitHub Action.
+- First release of mcp-compat, a CLI (`npx @macemek1/mcp-compat`) and GitHub Action.
 - Probes MCP protocol versions 2026-07-28, 2025-11-25, 2025-06-18, 2025-03-26 and 2024-11-05
   over stdio (`--stdio`) or HTTP (`--url`), one fresh process or HTTP exchange per probe.
 - Streamable HTTP and the deprecated HTTP+SSE transport, `--header` for credentials, and a check
