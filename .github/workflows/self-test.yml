@@ -1,0 +1,74 @@
+name: Self test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  stdio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - id: compat
+        uses: ./
+        with:
+          command: node test/fixtures/servers/stdio-server.mjs dual
+          fail-on: no-modern,no-legacy
+
+      - name: Check outputs
+        env:
+          LEGACY: ${{ steps.compat.outputs.legacy }}
+          MODERN: ${{ steps.compat.outputs.modern }}
+          CONNECT: ${{ steps.compat.outputs.connect }}
+          SERVER: ${{ steps.compat.outputs.server-name }}
+          REPORT: ${{ steps.compat.outputs.report-json }}
+        run: |
+          echo "legacy: $LEGACY, modern: $MODERN, connect: $CONNECT, server: $SERVER"
+          test "$CONNECT" = "both"
+          test "$SERVER" = "dual-fixture"
+          test -s "$REPORT"
+
+  http:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - name: Start the session fixture server
+        run: |
+          node test/fixtures/servers/http-server.mjs legacy-session 3917 > http-server.log 2>&1 &
+          for i in $(seq 1 50); do
+            grep -q listening http-server.log && break
+            sleep 0.1
+          done
+          cat http-server.log
+
+      - id: compat
+        uses: ./
+        with:
+          url: http://127.0.0.1:3917/mcp
+          headers: |
+            X-Self-Test: masked-value
+
+      - name: Check outputs
+        env:
+          LEGACY: ${{ steps.compat.outputs.legacy }}
+          MODERN: ${{ steps.compat.outputs.modern }}
+          MATRIX: ${{ steps.compat.outputs.matrix-json }}
+        run: |
+          echo "$MATRIX"
+          test "$LEGACY" = "true"
+          test "$MODERN" = "false"

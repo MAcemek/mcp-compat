@@ -1,0 +1,52 @@
+name: 'MCP compatibility matrix'
+description: 'Check which MCP protocol versions and transports a server works with, and which clients can connect to it.'
+
+branding:
+  icon: 'grid'
+  color: 'blue'
+
+inputs:
+  command:
+    description: 'Command that starts the server over stdio, run in the shell from the workspace. Set this or url.'
+    required: false
+    default: ''
+  url:
+    description: 'URL of an HTTP server (Streamable HTTP or HTTP+SSE). Set this or command.'
+    required: false
+    default: ''
+  headers:
+    description: 'HTTP headers for url, one "Name: value" per line. Values are masked in the log.'
+    required: false
+    default: ''
+  versions:
+    description: 'Comma-separated protocol versions to probe. Empty means all known versions.'
+    required: false
+    default: ''
+  timeout:
+    description: 'Time limit for each probe in milliseconds.'
+    required: false
+    default: '10000'
+  fail-on:
+    description: 'Comma-separated checks that fail the run: no-modern, no-legacy, deprecated-transport, session-required, any-failure.'
+    required: false
+    default: ''
+
+outputs:
+  legacy:
+    description: 'true if legacy-era clients (initialize handshake) can connect.'
+  modern:
+    description: 'true if modern-era clients (2026-07-28) can connect.'
+  connect:
+    description: 'Who can connect: both, legacy-only, modern-only or neither.'
+  server-name:
+    description: 'Server name reported by the server.'
+  server-version:
+    description: 'Server version reported by the server.'
+  matrix-json:
+    description: 'JSON array with version, transport, status, negotiatedVersion and reason for each probe.'
+  report-json:
+    description: 'Path to the full JSON report.'
+
+runs:
+  using: 'node24'
+  main: 'dist/index.js'

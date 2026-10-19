@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+      - name: Check that dist/ is up to date
+        run: |
+          if [ -n "$(git status --porcelain -- dist/)" ]; then
+            git status --short -- dist/
+            echo "::error::dist/ is out of date. Run 'npm run build' and commit the result."
+            exit 1
+          fi
+          git diff --exit-code -- dist/
+
+      - name: Offline demo
+        run: npm run demo
+
+      - name: CLI bundle
+        run: |
+          node lib/index.js --version
+          node lib/index.js --help
+          node lib/index.js --stdio "node test/fixtures/servers/stdio-server.mjs dual" --fail-on no-modern,no-legacy
+
+      - name: Package contents
+        run: npm pack --dry-run
+
+  node22:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build:cli
+      - run: node lib/index.js --stdio "node test/fixtures/servers/stdio-server.mjs dual" --fail-on no-modern,no-legacy
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
